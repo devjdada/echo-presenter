@@ -10,4 +10,4 @@ local-whisper = ["dep:whisper-rs"]
 [dependencies]
 echo-core.workspace = true
 serde.workspace = true
-whisper-rs = { version = "0.16", optional = true }
+whisper-rs = { version = "0.16", optional = true, features = ["cuda"] }
