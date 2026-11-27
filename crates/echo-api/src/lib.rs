@@ -89,9 +89,17 @@ button{padding:16px 24px;margin:8px;font-size:16px;border-radius:8px;border:1px 
     )
 }
 
+async fn show_state() -> Json<serde_json::Value> {
+    Json(serde_json::json!({
+        "status": "ready",
+        "active_look": "main-fullscreen"
+    }))
+}
+
 pub fn build_router() -> Router {
     Router::new()
         .route("/api/v1/health", get(health))
+        .route("/api/v1/show/state", get(show_state))
         .route("/api/v1/ingest", post(ingest_text))
         .route("/mcp", post(mcp_handler))
         .route("/remote", get(remote_ui))

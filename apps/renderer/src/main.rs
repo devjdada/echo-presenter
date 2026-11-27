@@ -49,6 +49,8 @@ struct RendererApp {
     text_renderer: TextRenderer,
     image_cache: ImageCache,
     last_scene: Option<(SceneGraph, String, Option<String>, Option<String>)>,
+    transition_kind: String,
+    visual_opacity: f32,
 }
 
 impl RendererApp {
@@ -68,6 +70,8 @@ impl RendererApp {
             text_renderer: TextRenderer::new(),
             image_cache: ImageCache::default(),
             last_scene: None,
+            transition_kind: "cut".into(),
+            visual_opacity: 1.0,
         }
     }
 
@@ -433,6 +437,7 @@ impl ApplicationHandler<UserEvent> for RendererApp {
                 }
             }
             RendererCommand::SetTransition { kind, duration_ms } => {
+                self.transition_kind = kind.clone();
                 info!(kind = %kind, duration_ms, "Updated transition");
             }
             RendererCommand::UpdateVisualLayer {
@@ -440,6 +445,7 @@ impl ApplicationHandler<UserEvent> for RendererApp {
                 blend_mode,
                 audio_reactive,
             } => {
+                self.visual_opacity = opacity.clamp(0.0, 1.0);
                 info!(opacity, blend_mode = %blend_mode, audio_reactive, "Updated visual layer");
             }
             RendererCommand::Shutdown => {
