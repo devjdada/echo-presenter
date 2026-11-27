@@ -633,6 +633,35 @@ fn list_whisper_models() -> Vec<WhisperModelStatus> {
     .collect()
 }
 
+#[tauri::command]
+async fn download_whisper_model(model_id: String, app: tauri::AppHandle) -> Result<String, String> {
+    use tauri::Emitter;
+    if model_id != "ggml-base.en.bin" && model_id != "ggml-small.en.bin" {
+        return Err(format!("Unsupported Whisper model: {model_id}"));
+    }
+    let base_dir = directories::ProjectDirs::from("com", "echopresenter", "EchoPresenter")
+        .map(|d| d.data_dir().join("ai-models"))
+        .unwrap_or_else(|| PathBuf::from("ai-models"));
+    std::fs::create_dir_all(&base_dir).map_err(|e| e.to_string())?;
+    let dest = base_dir.join(&model_id);
+    if dest.exists() {
+        let _ = app.emit("whisper://download-progress", serde_json::json!({ "modelId": model_id, "percent": 100 }));
+        return Ok(dest.to_string_lossy().to_string());
+    }
+
+    let url = format!("https://huggingface.co/ggerganov/whisper.cpp/resolve/main/{model_id}");
+    let _ = app.emit("whisper://download-progress", serde_json::json!({ "modelId": model_id, "percent": 5 }));
+    let resp = reqwest::get(&url).await.map_err(|e| format!("Download failed: {e}"))?;
+    if !resp.status().is_success() {
+        return Err(format!("HTTP {} downloading {model_id}", resp.status()));
+    }
+    let bytes = resp.bytes().await.map_err(|e| format!("Read failed: {e}"))?;
+    let _ = app.emit("whisper://download-progress", serde_json::json!({ "modelId": model_id, "percent": 90 }));
+    std::fs::write(&dest, &bytes).map_err(|e| format!("Write failed: {e}"))?;
+    let _ = app.emit("whisper://download-progress", serde_json::json!({ "modelId": model_id, "percent": 100 }));
+    Ok(dest.to_string_lossy().to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tracing_subscriber::fmt::init();
@@ -701,6 +730,7 @@ pub fn run() {
             import_echopres,
             test_ai_connection,
             list_whisper_models,
+            download_whisper_model,
             get_diagnostics
         ])
         .run(tauri::generate_context!())

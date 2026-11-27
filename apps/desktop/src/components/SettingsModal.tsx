@@ -20,6 +20,8 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
   const [requireApproval, setRequireApproval] = useState(true);
   const [mcpToolCount, setMcpToolCount] = useState(14);
   const [connStatus, setConnStatus] = useState<string | null>(null);
+  const [whisperModels, setWhisperModels] = useState<Array<{ id: string; size_label: string; installed: boolean; path: string }>>([]);
+  const [downloadingModel, setDownloadingModel] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open || !isTauri()) return;
@@ -161,6 +163,67 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
             </div>
           </div>
 
+          {sttProvider === "local-whisper" && (
+            <div className="rounded-lg border border-zinc-800 bg-zinc-950/70 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-zinc-200">Offline Whisper Models (AppData/ai-models)</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isTauri()) {
+                      invoke<Array<{ id: string; size_label: string; installed: boolean; path: string }>>("list_whisper_models")
+                        .then(setWhisperModels)
+                        .catch(() => {});
+                    }
+                  }}
+                  className="text-[11px] text-indigo-400 hover:text-indigo-300"
+                >
+                  Refresh
+                </button>
+              </div>
+              <div className="space-y-1.5">
+                {(whisperModels.length > 0
+                  ? whisperModels
+                  : [
+                      { id: "ggml-base.en.bin", size_label: "142 MB", installed: false, path: "" },
+                      { id: "ggml-small.en.bin", size_label: "466 MB", installed: false, path: "" },
+                    ]
+                ).map((m) => (
+                  <div key={m.id} className="flex items-center justify-between text-[11px] bg-zinc-900/70 rounded px-2.5 py-1.5">
+                    <div>
+                      <span className="font-mono text-zinc-200">{m.id}</span>
+                      <span className="ml-2 text-zinc-500">({m.size_label})</span>
+                    </div>
+                    {m.installed ? (
+                      <span className="text-emerald-400 font-medium">Installed</span>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={downloadingModel === m.id}
+                        onClick={async () => {
+                          if (!isTauri()) return;
+                          setDownloadingModel(m.id);
+                          try {
+                            await invoke("download_whisper_model", { modelId: m.id });
+                            const updated = await invoke<Array<{ id: string; size_label: string; installed: boolean; path: string }>>("list_whisper_models");
+                            setWhisperModels(updated);
+                          } catch (e) {
+                            setConnStatus(`Whisper download error: ${String(e)}`);
+                          } finally {
+                            setDownloadingModel(null);
+                          }
+                        }}
+                        className="px-2 py-0.5 rounded bg-amber-600/20 border border-amber-500/40 text-amber-200 hover:bg-amber-600/30 disabled:opacity-50"
+                      >
+                        {downloadingModel === m.id ? "Downloading..." : "Download"}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <label className="font-semibold text-zinc-300">Cloud STT Provider</label>
@@ -186,6 +249,67 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
               />
             </div>
           </div>
+
+          {sttProvider === "local-whisper" && (
+            <div className="rounded-lg border border-zinc-800 bg-zinc-950/70 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-zinc-200">Offline Whisper Models (AppData/ai-models)</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isTauri()) {
+                      invoke<Array<{ id: string; size_label: string; installed: boolean; path: string }>>("list_whisper_models")
+                        .then(setWhisperModels)
+                        .catch(() => {});
+                    }
+                  }}
+                  className="text-[11px] text-indigo-400 hover:text-indigo-300"
+                >
+                  Refresh
+                </button>
+              </div>
+              <div className="space-y-1.5">
+                {(whisperModels.length > 0
+                  ? whisperModels
+                  : [
+                      { id: "ggml-base.en.bin", size_label: "142 MB", installed: false, path: "" },
+                      { id: "ggml-small.en.bin", size_label: "466 MB", installed: false, path: "" },
+                    ]
+                ).map((m) => (
+                  <div key={m.id} className="flex items-center justify-between text-[11px] bg-zinc-900/70 rounded px-2.5 py-1.5">
+                    <div>
+                      <span className="font-mono text-zinc-200">{m.id}</span>
+                      <span className="ml-2 text-zinc-500">({m.size_label})</span>
+                    </div>
+                    {m.installed ? (
+                      <span className="text-emerald-400 font-medium">Installed</span>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={downloadingModel === m.id}
+                        onClick={async () => {
+                          if (!isTauri()) return;
+                          setDownloadingModel(m.id);
+                          try {
+                            await invoke("download_whisper_model", { modelId: m.id });
+                            const updated = await invoke<Array<{ id: string; size_label: string; installed: boolean; path: string }>>("list_whisper_models");
+                            setWhisperModels(updated);
+                          } catch (e) {
+                            setConnStatus(`Whisper download error: ${String(e)}`);
+                          } finally {
+                            setDownloadingModel(null);
+                          }
+                        }}
+                        className="px-2 py-0.5 rounded bg-amber-600/20 border border-amber-500/40 text-amber-200 hover:bg-amber-600/30 disabled:opacity-50"
+                      >
+                        {downloadingModel === m.id ? "Downloading..." : "Download"}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">
@@ -216,6 +340,67 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
               />
             </div>
           </div>
+
+          {sttProvider === "local-whisper" && (
+            <div className="rounded-lg border border-zinc-800 bg-zinc-950/70 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-zinc-200">Offline Whisper Models (AppData/ai-models)</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isTauri()) {
+                      invoke<Array<{ id: string; size_label: string; installed: boolean; path: string }>>("list_whisper_models")
+                        .then(setWhisperModels)
+                        .catch(() => {});
+                    }
+                  }}
+                  className="text-[11px] text-indigo-400 hover:text-indigo-300"
+                >
+                  Refresh
+                </button>
+              </div>
+              <div className="space-y-1.5">
+                {(whisperModels.length > 0
+                  ? whisperModels
+                  : [
+                      { id: "ggml-base.en.bin", size_label: "142 MB", installed: false, path: "" },
+                      { id: "ggml-small.en.bin", size_label: "466 MB", installed: false, path: "" },
+                    ]
+                ).map((m) => (
+                  <div key={m.id} className="flex items-center justify-between text-[11px] bg-zinc-900/70 rounded px-2.5 py-1.5">
+                    <div>
+                      <span className="font-mono text-zinc-200">{m.id}</span>
+                      <span className="ml-2 text-zinc-500">({m.size_label})</span>
+                    </div>
+                    {m.installed ? (
+                      <span className="text-emerald-400 font-medium">Installed</span>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={downloadingModel === m.id}
+                        onClick={async () => {
+                          if (!isTauri()) return;
+                          setDownloadingModel(m.id);
+                          try {
+                            await invoke("download_whisper_model", { modelId: m.id });
+                            const updated = await invoke<Array<{ id: string; size_label: string; installed: boolean; path: string }>>("list_whisper_models");
+                            setWhisperModels(updated);
+                          } catch (e) {
+                            setConnStatus(`Whisper download error: ${String(e)}`);
+                          } finally {
+                            setDownloadingModel(null);
+                          }
+                        }}
+                        className="px-2 py-0.5 rounded bg-amber-600/20 border border-amber-500/40 text-amber-200 hover:bg-amber-600/30 disabled:opacity-50"
+                      >
+                        {downloadingModel === m.id ? "Downloading..." : "Download"}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="p-3 rounded bg-zinc-950 border border-zinc-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
