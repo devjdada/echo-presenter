@@ -1,0 +1,9 @@
+[package]
+name = "echo-automation"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+echo-core.workspace = true
+serde.workspace = true
+rosc = "0.10"

@@ -1,0 +1,14 @@
+[package]
+name = "echo-media"
+version.workspace = true
+edition.workspace = true
+
+[features]
+default = []
+gstreamer-backend = ["dep:gstreamer"]
+
+[dependencies]
+echo-core.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+gstreamer = { version = "0.23", optional = true }

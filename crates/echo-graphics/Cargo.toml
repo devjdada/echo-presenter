@@ -1,0 +1,16 @@
+[package]
+name = "echo-graphics"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+echo-core.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+vello = "0.12"
+cosmic-text = "0.19"
+image = "0.25"
+
+[dev-dependencies]
+uuid.workspace = true

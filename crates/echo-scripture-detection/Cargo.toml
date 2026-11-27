@@ -1,0 +1,9 @@
+[package]
+name = "echo-scripture-detection"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+echo-core.workspace = true
+serde.workspace = true
+aho-corasick = "1"

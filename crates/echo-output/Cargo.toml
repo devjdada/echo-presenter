@@ -1,0 +1,9 @@
+[package]
+name = "echo-output"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+echo-core.workspace = true
+serde.workspace = true
+tracing.workspace = true

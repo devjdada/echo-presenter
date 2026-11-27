@@ -1,0 +1,34 @@
+[package]
+name = "echo-presenter-desktop"
+version.workspace = true
+edition.workspace = true
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+uuid.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+echo-core.workspace = true
+echo-output.workspace = true
+echo-presentation.workspace = true
+echo-bible.workspace = true
+echo-ingest.workspace = true
+echo-ai.workspace = true
+echo-api.workspace = true
+echo-mcp.workspace = true
+echo-audio.workspace = true
+echo-transcription.workspace = true
+echo-scripture-detection.workspace = true
+echo-quotes.workspace = true
+echo-automation.workspace = true
+echo-media.workspace = true
+echo-ndi.workspace = true
+directories = "5"
+axum = "0.8"

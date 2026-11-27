@@ -1,0 +1,9 @@
+[package]
+name = "echo-quotes"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+echo-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true

@@ -1,0 +1,12 @@
+[package]
+name = "echo-transcription"
+version.workspace = true
+edition.workspace = true
+
+[features]
+default = []
+local-whisper = []
+
+[dependencies]
+echo-core.workspace = true
+serde.workspace = true

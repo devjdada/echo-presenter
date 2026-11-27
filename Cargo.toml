@@ -1,0 +1,61 @@
+[workspace]
+resolver = "2"
+members = [
+    "apps/desktop/src-tauri",
+    "apps/renderer",
+    "crates/echo-core",
+    "crates/echo-graphics",
+    "crates/echo-output",
+    "crates/echo-presentation",
+    "crates/echo-bible",
+    "crates/echo-ai",
+    "crates/echo-ingest",
+    "crates/echo-quotes",
+    "crates/echo-scripture-detection",
+    "crates/echo-audio",
+    "crates/echo-transcription",
+    "crates/echo-automation",
+    "crates/echo-api",
+    "crates/echo-mcp",
+    "crates/echo-media",
+    "crates/echo-ndi",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+authors = ["EchoPresenter Team"]
+
+[workspace.dependencies]
+# Core
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rmp-serde = "1.3"
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "2"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
+directories = "5"
+
+# Internal crates
+echo-core = { path = "crates/echo-core" }
+echo-graphics = { path = "crates/echo-graphics" }
+echo-output = { path = "crates/echo-output" }
+echo-presentation = { path = "crates/echo-presentation" }
+echo-bible = { path = "crates/echo-bible" }
+echo-ai = { path = "crates/echo-ai" }
+echo-ingest = { path = "crates/echo-ingest" }
+echo-quotes = { path = "crates/echo-quotes" }
+echo-scripture-detection = { path = "crates/echo-scripture-detection" }
+echo-audio = { path = "crates/echo-audio" }
+echo-transcription = { path = "crates/echo-transcription" }
+echo-automation = { path = "crates/echo-automation" }
+echo-api = { path = "crates/echo-api" }
+echo-mcp = { path = "crates/echo-mcp" }
+echo-media = { path = "crates/echo-media" }
+echo-ndi = { path = "crates/echo-ndi" }
